@@ -7,17 +7,28 @@ const PaceCalculator = () => {
   const [animate, setAnimate] = useState(false);
 
   const validateTimeFormat = (input) => {
-    const timePattern = /^\d{1,2}:\d{2}:\d{2}$/;
-    return timePattern.test(input);
+    const hhmmssPattern = /^\d{1,2}:\d{2}:\d{2}$/;
+    const mmssPattern = /^\d{1,2}:\d{2}$/;
+    return hhmmssPattern.test(input) || mmssPattern.test(input);
   };
 
   const calculatePace = () => {
     if (!validateTimeFormat(timeInput)) {
-      alert("Please enter time in format hh:mm:ss");
+      alert("Please enter time in format hh:mm:ss or mm:ss");
       return;
     }
 
-    const [hours, minutes, seconds] = timeInput.split(":").map(Number);
+    const timeParts = timeInput.split(":").map(Number);
+    let hours = 0,
+      minutes = 0,
+      seconds = 0;
+
+    if (timeParts.length === 3) {
+      [hours, minutes, seconds] = timeParts;
+    } else {
+      [minutes, seconds] = timeParts;
+    }
+
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
     const distanceNum = parseFloat(distance);
 
@@ -63,14 +74,14 @@ const PaceCalculator = () => {
 
         <div className="flex flex-col">
           <label className="text-gray-700 text-sm font-bold mb-2">
-            Time (hh:mm:ss)
+            Time (hh:mm:ss) / (mm:ss)
           </label>
           <input
             type="text"
             value={timeInput}
             onChange={(e) => setTimeInput(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="e.g., 01:30:00"
+            placeholder="e.g., 01:30:00 or 30:00"
           />
         </div>
 
